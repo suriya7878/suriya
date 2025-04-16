@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hotel Management with AC/Non-AC</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .header-bar {
+      background: #2c3e50;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      color: #2c3e50;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    .booking-list {
+      margin-top: 20px;
+    }
+
+    .booking {
+      background: #e0f7fa;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .booking button {
+      background: #e74c3c;
+      color: white;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      margin-top: 5px;
+    }
+
+    .booking button:hover {
+      background: #c0392b;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 1.2em;
+      text-align: right;
+      margin-top: 15px;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-bar">🏨 Hotel Management Dashboard</div>
+  <div class="container">
+    <h2 style="text-align: center;">Book a Room</h2>
+    
+    <input type="text" id="guestName" placeholder="Guest Name" />
+    
+    <select id="roomType">
+      <option value="Single">Single</option>
+      <option value="Double">Double</option>
+      <option value="Suite">Suite</option>
+    </select>
+
+    <select id="acOption">
+      <option value="Non-AC">Non-AC</option>
+      <option value="AC">AC (+₹500)</option>
+    </select>
+
+    <button onclick="bookRoom()">Book Room</button>
+
+    <h2>Current Bookings</h2>
+    <div class="booking-list" id="bookingList"></div>
+    <div class="total" id="totalCost">Total Cost: ₹0</div>
+  </div>
+
+  <script>
+    const baseRoomPrices = {
+      Single: 1000,
+      Double: 1800,
+      Suite: 3000
+    };
+
+    const acExtraCharge = 500;
+    const bookings = [];
+
+    function bookRoom() {
+      const name = document.getElementById("guestName").value.trim();
+      const roomType = document.getElementById("roomType").value;
+      const acOption = document.getElementById("acOption").value;
+
+      if (!name) {
+        alert("Please enter a guest name.");
+        return;
+      }
+
+      let cost = baseRoomPrices[roomType];
+      if (acOption === "AC") {
+        cost += acExtraCharge;
+      }
+
+      const booking = {
+        id: Date.now(),
+        name,
+        roomType,
+        acOption,
+        cost
+      };
+
+      bookings.push(booking);
+      displayBookings();
+      document.getElementById("guestName").value = "";
+    }
+
+    function displayBookings() {
+      const list = document.getElementById("bookingList");
+      list.innerHTML = "";
+
+      let total = 0;
+
+      bookings.forEach((booking) => {
+        total += booking.cost;
+
+        const div = document.createElement("div");
+        div.className = "booking";
+        div.innerHTML = `
+          <strong>${booking.name}</strong> booked a <em>${booking.roomType}</em> room (${booking.acOption}) - ₹${booking.cost}
+          <br/>
+          <button onclick="deleteBooking(${booking.id})">Cancel</button>
+        `;
+        list.appendChild(div);
+      });
+
+      document.getElementById("totalCost").innerText = `Total Cost: ₹${total}`;
+    }
+
+    function deleteBooking(id) {
+      const index = bookings.findIndex((b) => b.id === id);
+      if (index !== -1) {
+        bookings.splice(index, 1);
+        displayBookings();
+      }
+    }
+  </script>
+</body>
+</html>
